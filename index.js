@@ -36,8 +36,14 @@ server.post('/api/users', (req, res) => {
 });
 
 server.get('/api/users', (req, res) => {
+  console.log(req.query.sortby)
+  const sortField = req.query.sortby || 'id';
   db.find()
     .then(users => {
+
+      users.sort(
+        (a, b) => (a[sortField] < b[sortField] ? -1 : 1)
+      );
       res.status(200).json(users)
     })
     .catch(({ code }) => {

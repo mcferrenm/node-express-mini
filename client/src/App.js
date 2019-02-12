@@ -16,8 +16,16 @@ class App extends Component {
   }
 
   componentDidMount() {
+    
+    this.getUsers('?sortby=id');
+    
+  }
+
+
+  getUsers = query => {
+
     this.setState({ isLoading: true })
-    axios.get(`${BASE_URL}/api/users`)
+    axios.get(`${BASE_URL}/api/users${query}`)
       .then(res => this.setState({
         users: res.data,
         isLoading: false
@@ -56,6 +64,12 @@ class App extends Component {
       .catch(err => console.log(err))
   }
 
+  handleSort = e => {
+    e.preventDefault();
+    const query = e.target.name === "name" ? "?sortby=name" : "?sortby=id"
+    this.getUsers(query)
+  }
+
   render() {
     const { isLoading, error, userInputs: { name, bio } } = this.state;
     if (isLoading) {
@@ -70,6 +84,8 @@ class App extends Component {
         <input onChange={this.handleChange} type="text" name="name" value={name} />
         <input onChange={this.handleChange} type="text" name="bio" value={bio} />
         <button onClick={this.handleAddUser}>Add user</button>
+        <button onClick={this.handleSort} name="name">Sort by name</button>
+        <button onClick={this.handleSort} name="id">Sort by id</button>
         {this.state.users.map(({ name, bio, id }) =>
           <div key={id} onClick={() => this.handleDeleteUser(id)}>
             <p>{name}</p>
